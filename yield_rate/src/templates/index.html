@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Yield Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group {
+            width: 80%;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        select:focus, input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .result-container {
+            width: 60%;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .result {
+            padding: 15px;
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            border-radius: 5px;
+            color: #155724;
+            font-size: 18px;
+        }
+
+        .recommendation-container {
+            width: 60%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .recommendation {
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 5px solid #ffae42;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 18px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+
+    {% if selected_crop_yield is not none and selected_crop_yield > 0 %}
+        <div class="result-container">
+            <h2 class="result">
+                Predicted Yield for {{ selected_crop.replace('_', ' ').title() }}: 
+                {{ selected_crop_yield|round(2) }} kg/ha
+            </h2>
+        </div>
+        
+        <div class="recommendation-container">
+            <h2>Farming Strategy Recommendation</h2>
+            <p class="recommendation">
+                {{ recommendation.replace('[SEP]', '<br>').replace('Irrigation', 'Irrigation').replace('Rotation', 'Rotation Plan') | safe }}
+            </p>
+        
+            <h2>விவசாய உத்தி பரிந்துரை (Tamil)</h2>
+            <p class="recommendation">
+                {{ recommendation_tamil.replace('[SEP]', '<br>') | safe }}
+            </p>
+        </div>
+        
+    {% endif %}
+
+    <div class="container">
+        <h1>Crop Yield Prediction</h1>
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label for="selected_crop">Select Crop:</label>
+                <select name="selected_crop" id="selected_crop" required>
+                    <option value="" disabled selected>Choose a crop</option>
+                    {% for crop in crops %}
+                        <option value="{{ crop }}" {% if selected_crop == crop %}selected{% endif %}>
+                            {{ crop.replace('_', ' ').title() }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="year_selection">Select Year:</label>
+                <select id="year_selection">
+                    <option value="" disabled selected>Choose a year</option>
+                    {% for year in range(2025, 2076) %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+
+            <div class="form-group">
+                <label for="temperature">Temperature (°C):</label>
+                <input type="number" id="temperature" name="temperature" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="humidity">Humidity (%):</label>
+                <input type="number" id="humidity" name="humidity" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="nitrogen">Nitrogen (kg/ha):</label>
+                <input type="number" id="nitrogen" name="nitrogen" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="phosphorus">Phosphorus (kg/ha):</label>
+                <input type="number" id="phosphorus" name="phosphorus" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="potassium">Potassium (kg/ha):</label>
+                <input type="number" id="potassium" name="potassium" required step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="rainfall">Rainfall (mm):</label>
+                <input type="number" id="rainfall" name="rainfall" required step="any">
+            </div>
+
+            <input type="submit" value="Predict Yield">
+        </form>
+    </div>
+
+</body>
+</html>
