@@ -92,3 +92,5 @@ Mean Absolute Error (MAE)
 
 R² Score
 
+
+Hosted Link: https://1698-122-164-83-109.ngrok-free.app/
